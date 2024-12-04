@@ -88,7 +88,20 @@ public class RedisClient extends DB {
       } else {
         jedis = new Jedis(host, port);
       }
-      ((Jedis) jedis).connect();
+      while (true){
+        try {
+          ((Jedis) jedis).connect();
+          break;
+        } catch (Exception e) {
+          System.err.println("Could not connect to Redis server " + host + ":" + port+ ". Retrying...");
+          try {
+            Thread.sleep(50);
+          } catch (InterruptedException e1) {
+            e1.printStackTrace();
+          }
+        }
+      }
+
     }
 
     String password = props.getProperty(PASSWORD_PROPERTY);
